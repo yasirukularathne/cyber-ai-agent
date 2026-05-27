@@ -1,0 +1,78 @@
+from app.utils.logger import get_logger
+
+logger = get_logger('mcp')
+
+IP_BLACKLIST = {
+    '45.12.22.1':    {'reason': 'Known C2 Server',      'risk': 'CRITICAL'},
+    '103.45.66.2':   {'reason': 'Known DDoS Source',    'risk': 'HIGH'},
+    '185.220.101.1': {'reason': 'Tor Exit Node',        'risk': 'HIGH'},
+    '194.165.16.1':  {'reason': 'Known Port Scanner',   'risk': 'MEDIUM'},
+    '10.0.0.200':    {'reason': 'Flagged Botnet Node',  'risk': 'HIGH'},
+}
+
+CVE_MAP = {
+    'Brute Force': [
+        {'id': 'CVE-2023-32784', 'desc': 'Password exposure via memory leak'},
+        {'id': 'CVE-2022-1388',  'desc': 'BIG-IP iControl REST auth bypass'}
+    ],
+    'DDoS/DoS': [
+        {'id': 'CVE-2023-44487', 'desc': 'HTTP/2 Rapid Reset DDoS attack'},
+        {'id': 'CVE-2022-26134', 'desc': 'Confluence Server RCE via OGNL'}
+    ],
+    'Port Scan': [
+        {'id': 'CVE-2021-44228', 'desc': 'Log4Shell - scanning phase indicator'}
+    ],
+    'Botnet': [
+        {'id': 'CVE-2022-30190', 'desc': 'Follina - used in botnet payloads'},
+        {'id': 'CVE-2023-23397', 'desc': 'Outlook privilege escalation'}
+    ]
+}
+
+class MCPToolLayer:
+    """
+    Layer 7: Enriches threats with IP reputation, CVE mapping, and incident summary.
+    """
+
+    def run(self, fusion_output: dict) -> dict:
+        try:
+            threats = fusion_output['threats']
+            enriched = []
+
+            for threat in threats:
+                ip    = threat['ip']
+                atype = threat['attack_type']
+
+                ip_rep = IP_BLACKLIST.get(ip, {
+                    'reason': 'No known threat intelligence', 'risk': 'UNKNOWN'
+                })
+                cves = CVE_MAP.get(atype, [])
+
+                enriched.append({
+                    **threat,
+                    'ip_reputation': ip_rep,
+                    'related_cves': cves,
+                    'ip_is_known_bad': ip in IP_BLACKLIST,
+                    'incident_summary': self._format_summary(threat, ip_rep, cves)
+                })
+
+            known_bad = sum(1 for e in enriched if e['ip_is_known_bad'])
+            logger.info(f'MCP: {known_bad} known-bad IPs found in {len(enriched)} threats')
+
+            return {
+                'status': 'OK',
+                'layer': 'mcp',
+                'enriched_threats': enriched,
+                'known_bad_ips': known_bad
+            }
+        except Exception as e:
+            logger.error(f'MCP failed: {e}')
+            return {'status': 'ERROR', 'layer': 'mcp', 'error': str(e)}
+
+    def _format_summary(self, threat, ip_rep, cves) -> str:
+        cve_str = ', '.join(c['id'] for c in cves) if cves else 'None'
+        return (
+            f"Threat: {threat['attack_type']} from {threat['ip']}. "
+            f"Severity: {threat['severity']}. "
+            f"IP Intel: {ip_rep['reason']}. "
+            f"Related CVEs: {cve_str}."
+        )
