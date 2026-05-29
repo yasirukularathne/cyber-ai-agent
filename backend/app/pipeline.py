@@ -17,7 +17,7 @@ _llm = None
 
 def _load_models():
     global _ingestion, _preprocessing, _xgboost, _bert, _autoencoder, _fusion, _mcp, _llm
-    if _ingestion is not None:
+    if all(model is not None for model in (_ingestion, _preprocessing, _xgboost, _bert, _autoencoder, _fusion, _mcp, _llm)):
         return
     logger.info('Loading all models...')
     from app.layers.ingestion         import IngestionLayer
@@ -29,14 +29,29 @@ def _load_models():
     from app.layers.mcp_tools         import MCPToolLayer
     from app.layers.llm_explainer     import LLMExplainerLayer
 
-    _ingestion     = IngestionLayer()
-    _preprocessing = PreprocessingLayer()
-    _xgboost       = XGBoostLayer()
-    _bert          = BERTLayer()
-    _autoencoder   = AutoencoderLayer()
-    _fusion        = FusionLayer()
-    _mcp           = MCPToolLayer()
-    _llm           = LLMExplainerLayer()
+    try:
+        ingestion     = IngestionLayer()
+        preprocessing = PreprocessingLayer()
+        xgboost       = XGBoostLayer()
+        bert          = BERTLayer()
+        autoencoder   = AutoencoderLayer()
+        fusion        = FusionLayer()
+        mcp           = MCPToolLayer()
+        llm           = LLMExplainerLayer()
+    except Exception:
+        # Keep the singleton cache clean so a later retry does not reuse a partial load.
+        _ingestion = _preprocessing = _xgboost = _bert = _autoencoder = _fusion = _mcp = _llm = None
+        logger.exception('Model loading failed; singleton cache cleared for retry.')
+        raise
+
+    _ingestion     = ingestion
+    _preprocessing = preprocessing
+    _xgboost       = xgboost
+    _bert          = bert
+    _autoencoder   = autoencoder
+    _fusion        = fusion
+    _mcp           = mcp
+    _llm           = llm
     logger.info('All models loaded successfully.')
 
 def run_pipeline(file_content: str, debug: bool = False) -> dict:
