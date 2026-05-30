@@ -1,0 +1,23 @@
+# Backend-specific ignores
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Ignore trained model artifacts and large binary outputs by default
+trained_models/
+!trained_models/reverse_map.json
+*.npy
+*.npz
+*.pkl
+*.h5
+*.keras
+*.safetensors
+
+# Uploads / temporary
+uploads/
+upload.json
