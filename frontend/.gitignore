@@ -1,0 +1,13 @@
+# Node / frontend
+node_modules/
+dist/
+build/
+.vite/
+.env
+.env.*
+
+# Logs
+npm-debug.log
+yarn-error.log
+
+.DS_Store
