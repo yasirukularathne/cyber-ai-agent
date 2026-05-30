@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Shield, LayoutDashboard, UploadCloud, AlertTriangle, Cpu, Terminal } from 'lucide-react';
+import { Shield, LayoutDashboard, UploadCloud, AlertTriangle, Cpu, Terminal, BrainCircuit, Activity, BarChart3 } from 'lucide-react';
 
 export default function Navbar() {
   const location = useLocation();
@@ -10,6 +10,9 @@ export default function Navbar() {
     { path: '/threats', label: 'Threats', icon: AlertTriangle },
     { path: '/reports', label: 'AI Reports', icon: Cpu },
     { path: '/debug', label: 'Debug View', icon: Terminal },
+    { path: '/xgboost-check', label: 'XGBoost', icon: BarChart3 },
+    { path: '/bert-check', label: 'BERT', icon: BrainCircuit },
+    { path: '/autoencoder-check', label: 'Autoencoder', icon: Activity },
   ];
 
   return (
@@ -56,7 +59,7 @@ export default function Navbar() {
       </Link>
 
       {/* Navigation Links */}
-      <div style={{ display: 'flex', gap: '8px' }}>
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
         {links.map((link) => {
           const Icon = link.icon;
           const isActive = location.pathname === link.path;

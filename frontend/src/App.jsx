@@ -5,6 +5,9 @@ import LogUpload from './pages/LogUpload';
 import Threats from './pages/Threats';
 import Reports from './pages/Reports';
 import DebugView from './pages/DebugView';
+import XGBoostCheck from './pages/XGBoostCheck';
+import BERTCheck from './pages/BERTCheck';
+import AutoencoderCheck from './pages/AutoencoderCheck';
 
 export default function App() {
   return (
@@ -31,6 +34,9 @@ export default function App() {
             <Route path="/threats" element={<Threats />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/debug" element={<DebugView />} />
+            <Route path="/xgboost-check" element={<XGBoostCheck />} />
+            <Route path="/bert-check" element={<BERTCheck />} />
+            <Route path="/autoencoder-check" element={<AutoencoderCheck />} />
           </Routes>
         </main>
       </div>

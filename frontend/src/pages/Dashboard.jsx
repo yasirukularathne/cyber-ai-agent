@@ -10,6 +10,7 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell, Legend
 } from 'recharts';
 import SeverityBadge from '../components/SeverityBadge';
+import ModelBreakdown from '../components/ModelBreakdown';
 
 const BASE = 'http://localhost:8000/api';
 
@@ -273,6 +274,8 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      <ModelBreakdown />
 
       {/* Recent Threats Table */}
       <div className="card">
