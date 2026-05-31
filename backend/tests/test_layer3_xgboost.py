@@ -37,3 +37,17 @@ def test_xgboost_confidence_valid():
         result = layer.run(make_preprocessing_output(5))
         for pred in result["predictions"]:
             assert 0.0 <= pred["confidence"] <= 1.0
+
+def test_xgboost_unknown_label_does_not_crash():
+    with patch('app.layers.xgboost_model.joblib.load') as mock_load:
+        mock_model = MagicMock()
+        mock_model.predict.return_value = np.array([12])
+        mock_model.predict_proba.return_value = np.array([[0.01, 0.99]])
+        mock_load.return_value = mock_model
+
+        from app.layers.xgboost_model import XGBoostLayer
+        layer = XGBoostLayer()
+        result = layer.run(make_preprocessing_output(1))
+
+        assert result["status"] == "OK"
+        assert result["predictions"][0]["attack_type"] == "Class 12"

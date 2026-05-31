@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from io import StringIO
 from datetime import datetime
 
@@ -55,5 +54,7 @@ class IngestionLayer:
             if col in df.columns:
                 return df[col].astype(str).tolist()
 
-        # If dataset truly has no IPs → fail explicitly
-        raise ValueError("No IP column found in dataset")
+        # Some training/inference CSV schemas (including CIC flow exports)
+        # do not include source IP columns. Keep pipeline compatible by
+        # returning placeholder IPs with one value per record.
+        return ['unknown'] * len(df)

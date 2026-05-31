@@ -28,3 +28,15 @@ def test_fused_score_in_range():
     result = layer.run(make_xgb(5), make_bert(5), make_ae(5), ["x"]*5)
     for r in result["all_results"]:
         assert 0.0 <= r["fused_score"] <= 1.5  # score can exceed 1 on anomaly
+
+def test_unknown_label_does_not_crash():
+    layer = FusionLayer()
+    xgb = {"predictions": [{"label": 11, "attack_type": "Class 11", "confidence": 0.9}]}
+    bert = {"predictions": [{"label": 11, "attack_type": "Class 11", "confidence": 0.8}]}
+    ae = {"results": [{"is_anomaly": True, "anomaly_score": 1.2, "reconstruction_error": 0.5}]}
+
+    result = layer.run(xgb, bert, ae, ["10.0.0.1"])
+
+    assert result["status"] == "OK"
+    assert result["all_results"][0]["attack_type"] == "Class 11"
+    assert result["all_results"][0]["severity"] == "HIGH"
