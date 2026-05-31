@@ -44,11 +44,16 @@ class IngestionLayer:
                 'dataframe': df,
                 'timestamp': datetime.now().isoformat()
             }
+
         except Exception as e:
             return {'status': 'ERROR', 'layer': 'ingestion', 'error': str(e)}
 
     def _extract_ips(self, df: pd.DataFrame) -> list:
-        for col in ['Source IP', 'Src IP', 'src_ip', 'Source_IP', 'src']:
+        ip_columns = ['Source IP', 'Src IP', 'src_ip', 'Source_IP', 'src']
+
+        for col in ip_columns:
             if col in df.columns:
-                return df[col].tolist()
-        return [f'192.168.1.{(i % 254) + 1}' for i in range(len(df))]
+                return df[col].astype(str).tolist()
+
+        # If dataset truly has no IPs → fail explicitly
+        raise ValueError("No IP column found in dataset")

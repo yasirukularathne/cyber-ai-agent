@@ -1,8 +1,7 @@
 from app.utils.logger import get_logger
+from app.layers.label_map import ATTACK_LABELS
 
 logger = get_logger('fusion')
-
-ATTACK_LABELS = {0: 'Benign', 1: 'Brute Force', 2: 'DDoS/DoS', 3: 'Port Scan', 4: 'Botnet'}
 SEVERITY_MAP  = {0: 'NONE', 1: 'HIGH', 2: 'CRITICAL', 3: 'MEDIUM', 4: 'HIGH'}
 WEIGHTS = {'xgboost': 0.40, 'bert': 0.40, 'autoencoder': 0.20}
 
@@ -50,14 +49,17 @@ class FusionLayer:
                 if combined < 0.15:
                     final_label = 0
 
+                final_attack_type = ATTACK_LABELS.get(final_label, f'Class {final_label}')
+                final_severity = SEVERITY_MAP.get(final_label, 'HIGH' if final_label != 0 else 'NONE')
+
                 fused.append({
                     'index': i,
                     'ip': ips[i] if i < len(ips) else 'unknown',
-                    'attack_type': ATTACK_LABELS[final_label],
+                    'attack_type': final_attack_type,
                     'attack_label': final_label,
                     'fused_score': round(combined, 4),
                     'confidence_pct': round(combined * 100, 2),
-                    'severity': SEVERITY_MAP[final_label],
+                    'severity': final_severity,
                     'is_threat': final_label != 0,
                     'xgb_prediction': xgb_preds[i]['attack_type'],
                     'bert_prediction': bert_preds[i]['attack_type'],

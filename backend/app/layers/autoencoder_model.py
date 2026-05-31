@@ -1,8 +1,10 @@
 import numpy as np
 import tensorflow as tf
+from pathlib import Path
 from app.utils.logger import get_logger
 
 logger = get_logger('autoencoder')
+BASE_DIR = Path(__file__).resolve().parents[2]
 
 class AutoencoderLayer:
     """
@@ -11,8 +13,10 @@ class AutoencoderLayer:
     """
 
     def __init__(self):
-        self.model = tf.keras.models.load_model('trained_models/autoencoder.keras')
-        self.threshold = float(np.load('trained_models/ae_threshold.npy')[0])
+        self.model = tf.keras.models.load_model(BASE_DIR / 'trained_models' / 'autoencoder.keras')
+        threshold_data = np.load(BASE_DIR / 'trained_models' / 'ae_threshold.npy', allow_pickle=True)
+        threshold_array = np.asarray(threshold_data).reshape(-1)
+        self.threshold = float(threshold_array[0]) if threshold_array.size else 0.0
         logger.info(f'Autoencoder loaded. Threshold: {self.threshold:.6f}')
 
     def run(self, preprocessing_output: dict) -> dict:

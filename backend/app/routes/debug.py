@@ -18,8 +18,11 @@ def get_debug_run(run_id: str):
     path = f'debug_logs/run_{run_id}.json'
     if not os.path.exists(path):
         return {'error': 'Run not found', 'run_id': run_id}
-    with open(path) as f:
-        return json.load(f)
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        return {'error': 'Debug file is not valid JSON', 'run_id': run_id}
 
 @router.get('/debug/latest')
 def get_debug_latest():
@@ -31,5 +34,8 @@ def get_debug_latest():
     )
     if not files:
         return {'error': 'No runs found.'}
-    with open(f'debug_logs/{files[0]}') as f:
-        return json.load(f)
+    try:
+        with open(f'debug_logs/{files[0]}') as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        return {'error': 'Latest debug file is not valid JSON', 'filename': files[0]}

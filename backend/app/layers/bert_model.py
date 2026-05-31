@@ -2,10 +2,9 @@ import numpy as np
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification
 from app.utils.logger import get_logger
+from app.layers.label_map import ATTACK_LABELS
 
 logger = get_logger('bert')
-
-ATTACK_LABELS = {0: 'Benign', 1: 'Brute Force', 2: 'DDoS/DoS', 3: 'Port Scan', 4: 'Botnet'}
 
 class BERTLayer:
     """
@@ -43,10 +42,11 @@ class BERTLayer:
                 preds = np.argmax(probs, axis=1)
 
                 for j, (pred, prob) in enumerate(zip(preds, probs)):
+                    label = int(pred)
                     all_results.append({
                         'index': i + j,
-                        'label': int(pred),
-                        'attack_type': ATTACK_LABELS[int(pred)],
+                        'label': label,
+                        'attack_type': ATTACK_LABELS.get(label, f'Class {label}'),
                         'confidence': round(float(np.max(prob)), 4),
                         'logits': logits[j].cpu().numpy().tolist()
                     })
