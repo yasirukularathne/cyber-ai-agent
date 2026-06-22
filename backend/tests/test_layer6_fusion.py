@@ -31,12 +31,13 @@ def test_fused_score_in_range():
 
 def test_unknown_label_does_not_crash():
     layer = FusionLayer()
-    xgb = {"predictions": [{"label": 11, "attack_type": "Class 11", "confidence": 0.9}]}
-    bert = {"predictions": [{"label": 11, "attack_type": "Class 11", "confidence": 0.8}]}
+    xgb = {"predictions": [{"label": 99, "attack_type": "Class 99", "confidence": 0.9}]}
+    bert = {"predictions": [{"label": 99, "attack_type": "Class 99", "confidence": 0.8}]}
     ae = {"results": [{"is_anomaly": True, "anomaly_score": 1.2, "reconstruction_error": 0.5}]}
 
     result = layer.run(xgb, bert, ae, ["10.0.0.1"])
 
     assert result["status"] == "OK"
-    assert result["all_results"][0]["attack_type"] == "Class 11"
+    assert result["all_results"][0]["attack_type"] == "Class 99"
     assert result["all_results"][0]["severity"] == "HIGH"
+

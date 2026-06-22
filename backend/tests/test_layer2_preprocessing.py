@@ -26,7 +26,8 @@ def test_preprocessing_no_nulls():
         layer.feature_names = []
 
         result = layer.run(make_mock_ingestion_output())
-        assert result["null_count_after_clean"] == 0
+        assert result["raw_features"].isnull().sum().sum() == 0
+
 
 def test_nlp_texts_generated():
     with patch('app.layers.preprocessing.joblib.load'), \
