@@ -9,6 +9,10 @@ IP_BLACKLIST = {
     '194.165.16.1':  {'reason': 'Known Port Scanner',   'risk': 'MEDIUM'},
     '10.0.0.200':    {'reason': 'Flagged Botnet Node',  'risk': 'HIGH'},
 }
+# NOTE: This is a static, hand-curated lookup table, not a live threat-intel
+# feed (e.g. AbuseIPDB/VirusTotal). Any IP not in this 5-entry list will
+# always resolve to 'UNKNOWN' risk. Fine for a coursework demo — just don't
+# describe this as "live IP reputation checking" in writeups.
 
 CVE_MAP = {
     'Brute Force': [
@@ -28,6 +32,28 @@ CVE_MAP = {
     ]
 }
 
+# ── FIX: alias map from real model labels (e.g. CIC-IDS2017 class names)
+# to the CVE_MAP keys above. Without this, CVE_MAP.get(atype, []) almost
+# never matched because the model's actual labels ('PortScan', 'Bot',
+# 'DDoS', 'FTP-Patator', etc.) don't equal the CVE_MAP keys verbatim.
+# VERIFY against your real label set (print fusion_output['threats'][0]
+# ['attack_type'] and check your label encoder) before trusting this.
+ATTACK_TYPE_TO_CVE_KEY = {
+    'FTP-Patator': 'Brute Force',
+    'SSH-Patator': 'Brute Force',
+    'Web Attack – Brute Force': 'Brute Force',
+    'DDoS': 'DDoS/DoS',
+    'DoS Hulk': 'DDoS/DoS',
+    'DoS GoldenEye': 'DDoS/DoS',
+    'DoS slowloris': 'DDoS/DoS',
+    'DoS Slowhttptest': 'DDoS/DoS',
+    'PortScan': 'Port Scan',
+    'Bot': 'Botnet',
+}
+# Classes with no curated CVE entries (will always show "Related CVEs: None"):
+# Infiltration, Heartbleed, Web Attack – XSS, Web Attack – Sql Injection, BENIGN
+
+
 class MCPToolLayer:
     """
     Layer 7: Enriches threats with IP reputation, CVE mapping, and incident summary.
@@ -37,26 +63,38 @@ class MCPToolLayer:
         try:
             threats = fusion_output['threats']
             enriched = []
+            skipped = 0
 
             for threat in threats:
-                ip    = threat['ip']
-                atype = threat['attack_type']
+                try:
+                    ip    = threat['ip']
+                    atype = threat['attack_type']
 
-                ip_rep = IP_BLACKLIST.get(ip, {
-                    'reason': 'No known threat intelligence', 'risk': 'UNKNOWN'
-                })
-                cves = CVE_MAP.get(atype, [])
+                    ip_rep = IP_BLACKLIST.get(ip, {
+                        'reason': 'No known threat intelligence', 'risk': 'UNKNOWN'
+                    })
 
-                enriched.append({
-                    **threat,
-                    'ip_reputation': ip_rep,
-                    'related_cves': cves,
-                    'ip_is_known_bad': ip in IP_BLACKLIST,
-                    'incident_summary': self._format_summary(threat, ip_rep, cves)
-                })
+                    cve_key = ATTACK_TYPE_TO_CVE_KEY.get(atype, atype)
+                    cves = CVE_MAP.get(cve_key, [])
+
+                    enriched.append({
+                        **threat,
+                        'ip_reputation': ip_rep,
+                        'related_cves': cves,
+                        'ip_is_known_bad': ip in IP_BLACKLIST,
+                        'incident_summary': self._format_summary(threat, ip_rep, cves)
+                    })
+                except Exception as item_err:
+                    # ── FIX: don't let one malformed threat abort the whole batch
+                    skipped += 1
+                    logger.warning(f'MCP: skipping malformed threat record: {item_err}')
+                    continue
 
             known_bad = sum(1 for e in enriched if e['ip_is_known_bad'])
-            logger.info(f'MCP: {known_bad} known-bad IPs found in {len(enriched)} threats')
+            logger.info(
+                f'MCP: {known_bad} known-bad IPs found in {len(enriched)} threats'
+                f'{f" ({skipped} skipped)" if skipped else ""}'
+            )
 
             return {
                 'status': 'OK',

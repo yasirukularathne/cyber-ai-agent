@@ -11,9 +11,9 @@ export const ATTACK_LABELS = {
   9: 'Infiltration',
   10: 'PortScan',
   11: 'SSH-Patator',
-  12: 'Web Attack � Brute Force',
-  13: 'Web Attack � Sql Injection',
-  14: 'Web Attack � XSS',
+  12: 'Web Attack – Brute Force',
+  13: 'Web Attack – Sql Injection',
+  14: 'Web Attack – XSS',
 };
 
 export function formatAttackLabel(label, fallback = 'Unknown') {

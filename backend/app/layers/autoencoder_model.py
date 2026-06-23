@@ -1,3 +1,4 @@
+import json
 import numpy as np
 try:
     import tensorflow as tf
@@ -12,6 +13,7 @@ from app.utils.logger import get_logger
 logger = get_logger('autoencoder')
 BASE_DIR = Path(__file__).resolve().parents[2]
 
+
 class AutoencoderLayer:
     """
     Layer 5: Unsupervised anomaly detection.
@@ -19,11 +21,23 @@ class AutoencoderLayer:
     """
 
     def __init__(self):
-        self.model = tf.keras.models.load_model(BASE_DIR / 'trained_models' / 'autoencoder.keras')
-        threshold_data = np.load(BASE_DIR / 'trained_models' / 'ae_threshold.npy', allow_pickle=True)
-        threshold_array = np.asarray(threshold_data).reshape(-1)
-        self.threshold = float(threshold_array[0]) if threshold_array.size else 0.0
-        logger.info(f'Autoencoder loaded. Threshold: {self.threshold:.6f}')
+        self.model = tf.keras.models.load_model(
+            BASE_DIR / 'trained_models' / 'autoencoder.keras'
+        )
+
+        # FIX: load the threshold from the SAME file the training notebook
+        # actually writes (autoencoder_threshold.json), not the unrelated
+        # ae_threshold.npy, which is never produced by current training
+        # and has no guaranteed relationship to the loaded model's weights.
+        threshold_path = BASE_DIR / 'trained_models' / 'autoencoder_threshold.json'
+        with open(threshold_path, 'r') as f:
+            threshold_data = json.load(f)
+
+        self.threshold = float(threshold_data['threshold'])
+        logger.info(
+            f'Autoencoder loaded. Threshold: {self.threshold:.6f} '
+            f'({threshold_data.get("threshold_name", "unknown")})'
+        )
 
     def run(self, preprocessing_output: dict) -> dict:
         try:

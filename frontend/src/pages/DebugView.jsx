@@ -174,9 +174,15 @@ export default function DebugView() {
             <h3 style={{ fontSize: '1.2rem', color: 'var(--color-primary)' }}>
               {LAYER_LABELS[selectedLayer]} Diagnostic Data
             </h3>
-            <span className="badge badge-success">
-              Execution: OK
-            </span>
+            {(() => {
+              const layerStatus = debugData.layers?.[selectedLayer]?.status;
+              const isOk = layerStatus === 'OK';
+              return (
+                <span className={isOk ? 'badge badge-success' : 'badge badge-critical'}>
+                  {layerStatus ? `Execution: ${layerStatus}` : 'No Data'}
+                </span>
+              );
+            })()}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
