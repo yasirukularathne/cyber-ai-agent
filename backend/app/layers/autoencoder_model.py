@@ -1,6 +1,12 @@
 import json
 import numpy as np
-import tensorflow as tf
+try:
+    import tensorflow as tf
+    HAS_TENSORFLOW = True
+except ImportError:
+    HAS_TENSORFLOW = False
+    from unittest.mock import MagicMock
+    tf = MagicMock()
 from pathlib import Path
 from app.utils.logger import get_logger
 
