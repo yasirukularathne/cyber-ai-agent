@@ -1,384 +1,578 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[12pt,a4paper]{article}
 
-% --- Packages ---
+% ------------------------------------------------------------
+% Packages and formatting required by the assignment
+% ------------------------------------------------------------
 \usepackage[utf8]{inputenc}
-\usepackage[margin=2.5cm, headheight=14pt]{geometry}
+\usepackage[margin=1in, headheight=15pt]{geometry}
+\usepackage{mathptmx}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
 \usepackage{enumitem}
-\usepackage[nobottomtitles*]{titlesec}
-\usepackage{xcolor}
-\usepackage{graphicx}
-\usepackage{tikz}
 \usepackage{float}
-\usepackage{fancyhdr}
-\usepackage{parskip}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{caption}
 \usepackage{listings}
 \usepackage{hyperref}
-\usepackage{tabularx}
-\usepackage{caption}
-\usepackage{subcaption}
-\usepackage{array}
-\usepackage{multirow}
-\usepackage{longtable}
+\usepackage{fancyhdr}
 \usepackage{setspace}
+\usepackage[nobottomtitles*]{titlesec}
 
-% --- Hyperref Setup ---
+\usetikzlibrary{arrows.meta, positioning}
+
 \hypersetup{
     colorlinks=true,
-    linkcolor=black!70!black,
-    citecolor=black!70!black,
-    urlcolor=black!70!black,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=black
 }
 
-% --- Formatting ---
 \titleformat{\section}{\Large\bfseries}{}{0em}{}
 \titleformat{\subsection}{\large\bfseries}{}{0em}{}
 \titleformat{\subsubsection}{\normalsize\bfseries}{}{0em}{}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{0.8em}
+\setlength{\parskip}{0.55em}
+\onehalfspacing
+\sloppy
 
-% Code Block Styling
 \lstset{
     basicstyle=\ttfamily\small,
     breaklines=true,
     frame=single,
     backgroundcolor=\color{gray!10},
-    keywordstyle=\color{blue},
-    commentstyle=\color{green!60!black},
-    stringstyle=\color{orange},
     numbers=left,
     numberstyle=\tiny\color{gray},
     numbersep=8pt,
-    tabsize=4,
     showstringspaces=false,
-    captionpos=b,
+    tabsize=4,
+    captionpos=b
 }
 
-% Rename Listings to Figure and share figure counter
-\renewcommand{\lstlistingname}{Figure}
-\makeatletter
-\AtBeginDocument{% 
-  \let\c@lstlisting\c@figure
-  \let\thelstlisting\thefigure
-  \@namedef{ext@lstlisting}{lof}%
-  \let\l@lstlisting\l@figure
-}
-\makeatother
-
-% Prevent orphaned headings and reduce excessive whitespace
-\widowpenalty=10000
-\clubpenalty=10000
-\raggedbottom
-\renewcommand{\bottomtitlespace}{0.12\textheight}
-
-% Header/Footer
 \pagestyle{fancy}
 \fancyhf{}
-\rhead{Advanced Artificial Intelligence -- Group Project}
 \lhead{Cyber AI Agent}
+\rhead{Advanced Artificial Intelligence}
 \cfoot{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
 \begin{document}
-\onehalfspacing
 
-% ==========================================
-%                  COVER PAGE
-% ==========================================
+% ------------------------------------------------------------
+% Cover page
+% ------------------------------------------------------------
 \begin{titlepage}
     \centering
-    \vspace*{1cm}
-    {\LARGE Department of Electrical and Information Engineering}\\[0.4cm]
-    {\Large University of Ruhuna}\\[1.5cm]
-    {\Large Final Report}\\[0.3cm]
+    \vspace*{0.8cm}
+    {\Large Department of Electrical and Information Engineering}\\[0.25cm]
+    {\Large University of Ruhuna}\\[1.2cm]
+    {\Large Advanced Artificial Intelligence -- Group Project}\\[0.4cm]
     \rule{\linewidth}{0.5mm}\\[0.3cm]
-    {\huge Cyber AI Agent: Multi-Model Intrusion Detection and Explanation Pipeline}\\[0.2cm]
-    \rule{\linewidth}{0.5mm}\\[0.5cm]
-    {\large Advanced Artificial Intelligence Group Project}\\[1.3cm]
+    {\huge \bfseries Cyber AI Agent}\\[0.25cm]
+    {\Large Multi-Model Network Intrusion Detection and Explanation System}\\[0.3cm]
+    \rule{\linewidth}{0.5mm}\\[1.0cm]
 
     \begin{tabular}{l l}
         Student Name 1 & Index No. \\
         Student Name 2 & Index No. \\
         Student Name 3 & Index No. \\
-    \end{tabular}\\[1cm]
+    \end{tabular}\\[1.0cm]
 
-    {\large 30/05/2026}\\[2cm]
+    {\large Final Report}\\[0.2cm]
+    {\large 23 June 2026}\\[1.0cm]
 
     \vfill
-    Department of Electrical and Information Engineering\\
-    University of Ruhuna\\[0.5cm]
+    \textbf{Domain:} Telecommunications / Cybersecurity\\
+    \textbf{Deliverable:} Functional AI product with reproducible code, notebooks, and evaluation artifacts
     \vfill
 \end{titlepage}
 
+\pagenumbering{roman}
 \newpage
 \tableofcontents
 \newpage
 \listoffigures
-\newpage
 \listoftables
 \newpage
+\pagenumbering{arabic}
 
+% ------------------------------------------------------------
 \section{Executive Summary}
 
-Cyber AI Agent is a layered cybersecurity analytics system for detecting and explaining malicious network traffic. It ingests CSV flow records, preprocesses them into reusable artifacts, applies three complementary AI models, and fuses their outputs into a final threat verdict with a human-readable explanation. The project satisfies the assignment requirement to use multiple Advanced AI techniques by combining NLP, transformer-based transfer learning, and generative anomaly detection in one reproducible pipeline.
+Cyber AI Agent is a functional artificial intelligence product for detecting and explaining malicious network traffic from flow-export CSV files. The system targets the telecommunications and cybersecurity domain, where network anomaly detection is operationally important because attacks such as DDoS, brute force activity, port scanning, botnet traffic, infiltration, and web attacks can disrupt services and compromise user data.
 
-The system is implemented as a set of notebooks for training and evaluation and a FastAPI backend for runtime inference. The notebooks produce the scaler, label mappings, feature names, clipped values, trained models, and metrics used by the backend. The final service exposes upload, prediction, reporting, dashboard, and debug routes, enabling both demonstration and experimentation.
+The project implements an eight-layer detection pipeline in a FastAPI backend and exposes the results through a React dashboard. The runtime sequence is ingestion, preprocessing, XGBoost classification, BERT-based text classification, autoencoder anomaly detection, fusion, static threat-intelligence enrichment, and LLM-based explanation. This provides a complete demonstrable product rather than only an offline experiment.
 
-\section{Problem Statement \& Motivation}
+The project satisfies and exceeds the assignment requirement to implement at least three Advanced AI techniques. It uses natural language processing by converting network flow records into text, transformer transfer learning through a fine-tuned BERT classifier, generative AI through a denoising autoencoder trained on benign traffic, ensemble learning through a fusion layer, and prompt engineering through a structured LLM explanation layer. The project also includes training notebooks, saved artifacts, a README/setup guide, backend unit tests, and a frontend demo workflow.
 
-Network intrusion detection often suffers from class imbalance, noisy features, and limited interpretability. Traditional detectors can identify attacks, but they do not explain why a record was flagged or how different models agree with each other. This project addresses those issues by combining a tabular classifier, a transformer-based text classifier, and an autoencoder-based anomaly detector, then adding an explanation layer on top.
+The strongest individual model is XGBoost, with a saved test accuracy of 0.9974 and F1-score of 0.9969 over 241,522 test samples. The standalone BERT artifact reports an accuracy of 0.9513 and F1-score of 0.9465, while the autoencoder provides unsupervised anomaly support with a detection-rate-oriented evaluation. The ensemble experiment achieves a fusion F1-score of 0.9713. A key lesson from the evaluation is that the ensemble improves interpretability and model diversity, but XGBoost remains the most reliable decision engine in the saved results. Therefore, the recommended future production hardening is an XGBoost-centric architecture where the autoencoder is a risk overlay and the language model is explanation-only.
 
-The motivation is practical: a security team needs a system that can inspect flow logs quickly, identify suspicious traffic, reduce false negatives on rare attacks, and produce concise explanations that support incident response. The selected domain is Telecommunications, which is one of the recommended domains in the assignment and is well matched to network flow analysis.
+% ------------------------------------------------------------
+\section{Problem Statement and Motivation}
 
-\section{Literature Review}
+Network intrusion detection systems must process large volumes of traffic logs and identify malicious behavior quickly. In practice, this is difficult for four reasons. First, network-flow data is high-dimensional and noisy. Second, attack classes are imbalanced: benign traffic dominates many datasets, while rare attacks may have very few examples. Third, a single model may be accurate on common classes but weak on abnormal or rare patterns. Fourth, black-box predictions are difficult for security analysts to trust without clear explanations.
 
-This project builds on three established ideas in modern AI systems. First, supervised tabular classifiers such as gradient-boosted decision trees remain strong baselines for structured traffic features because they handle heterogeneous feature scales and class imbalance effectively. Second, transformer-based models such as BERT have demonstrated strong transfer-learning performance in many classification tasks and can be adapted here by converting each flow record into a natural-language description. Third, autoencoders are widely used for anomaly detection because they learn a compact representation of normal behavior and assign high reconstruction error to unusual inputs.
-
-Recent applied cybersecurity systems increasingly combine multiple model families rather than relying on a single detector. This project follows that direction by using model diversity as a strength: XGBoost captures tabular structure, BERT captures semantic descriptions, and the autoencoder detects unusual patterns that may not be well separated in the supervised labels. The LLM explanation layer further improves usability by translating technical detections into analyst-friendly summaries.
-
-\section{Methodology}
-
-\subsection{Overall Pipeline}
-
-The methodology follows a five-stage pipeline.
+The objective of this project is to build a reproducible AI system that can:
 
 \begin{enumerate}[leftmargin=1.2cm]
-    \item \textbf{Data ingestion}: CSV flow records are parsed, validated, and enriched with IP metadata.
-    \item \textbf{Preprocessing}: The selected 18 features are cleaned, standardized, clipped, and saved with the fitted scaler and feature metadata.
-    \item \textbf{Model training}: XGBoost, BERT, and a denoising autoencoder are trained independently using the notebook workflow.
-    \item \textbf{Fusion}: The model outputs are combined using a weighted decision layer to produce the final attack label.
-    \item \textbf{Explanation}: The top detected threats are passed to an LLM explainer that returns structured JSON narratives.
+    \item accept network-flow CSV files through a usable interface;
+    \item classify each flow as benign or malicious;
+    \item identify the likely attack type when malicious;
+    \item flag unusual behavior using unsupervised anomaly detection;
+    \item enrich suspicious records with static threat-intelligence context;
+    \item generate analyst-readable explanations and mitigation guidance;
+    \item provide transparent debug traces for every pipeline layer.
 \end{enumerate}
 
-\subsection{Technique Mapping}
+The project is relevant to the Telecommunications domain listed in the assignment brief because service providers continuously monitor network flows for denial-of-service, scanning, brute force, and botnet activity. A working AI-assisted monitoring tool can reduce analyst workload and improve response time.
+
+% ------------------------------------------------------------
+\section{Literature Review}
+
+Intrusion detection has traditionally used rule-based signatures and supervised machine learning. Signature systems are useful for known patterns, but they struggle with evolving attacks and noisy traffic. Supervised machine learning models such as random forests, support vector machines, and gradient boosting models have therefore been widely used for tabular intrusion datasets. XGBoost is particularly effective for structured data because it builds additive decision trees, handles non-linear interactions, supports regularization, and performs well on heterogeneous numerical features \cite{xgboost}.
+
+Transformer-based models changed the state of the art in natural language processing by learning contextual representations from large corpora. BERT introduced bidirectional transformer pre-training and has been adapted to many classification tasks through fine-tuning \cite{bert}. Although raw network traffic is numeric, this project converts each flow into a compact textual description so that a transformer can learn semantic patterns such as bursty traffic, payload size, and flow imbalance.
+
+Autoencoders are neural networks trained to reconstruct their input. When trained mainly or only on benign traffic, they learn the normal feature manifold. Inputs that reconstruct poorly can be treated as anomalies. This makes autoencoders valuable in intrusion detection because they can highlight unusual behavior even when the specific attack class is difficult to identify \cite{rumelhart}.
+
+Recent applied AI systems increasingly combine multiple models with explanation layers. The motivation is not only to increase predictive performance, but also to improve transparency. This project follows that direction by combining tabular classification, transformer classification, unsupervised anomaly detection, and language-model explanation in one deployable workflow.
+
+% ------------------------------------------------------------
+\section{Methodology}
+
+\subsection{Dataset and Feature Space}
+
+The project uses CIC/ISCX-style network flow data exported as CSV files. The runtime backend expects 18 numerical features, listed in Table~\ref{tab:features}. Extra columns are allowed, and source IP metadata is used when present. If no source IP column exists, the ingestion layer uses \texttt{unknown} placeholders so that standard flow-export files still run.
 
 \begin{table}[H]
 \centering
-\caption{Mapping of Assignment Techniques to the Project}
-\label{tab:techniques}
-\begin{tabular}{l p{9cm}}
+\caption{Required Runtime Features}
+\label{tab:features}
+\small
+\begin{tabularx}{\linewidth}{X X}
 \toprule
-Technique & How it is used \\
+Feature group & Features \\
 \midrule
-NLP & Flow records are converted into natural-language descriptions before BERT classification. \\
-Transformer-based model & BERT is used for traffic-text classification. \\
-Generative AI & A denoising autoencoder models benign traffic and flags anomalies via reconstruction error. \\
-Transfer learning & BERT leverages pre-trained transformer weights rather than training from scratch. \\
-Prompt engineering & The LLM explainer uses a structured JSON prompt for analyst-facing threat summaries. \\
+Duration and volume & Flow Duration; Total Fwd Packets; Total Backward Packets; Total Length of Fwd Packets; Total Length of Bwd Packets \\
+Rate features & Flow Bytes/s; Flow Packets/s \\
+Packet length & Fwd Packet Length Mean; Bwd Packet Length Mean; Average Packet Size \\
+Inter-arrival time & Flow IAT Mean; Fwd IAT Mean; Bwd IAT Mean \\
+TCP flags and port & Fwd PSH Flags; Bwd PSH Flags; Fwd URG Flags; Bwd URG Flags; Destination Port \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
-\subsection{Preprocessing Strategy}
+The label set contains 15 classes: \texttt{BENIGN}, \texttt{Bot}, \texttt{DDoS}, four DoS variants, \texttt{FTP-Patator}, \texttt{SSH-Patator}, \texttt{Heartbleed}, \texttt{Infiltration}, \texttt{PortScan}, and three web attack classes.
 
-The preprocessing notebook selects 18 core network-flow features, removes duplicates, fills missing values, handles infinite values, applies standard scaling, and clips extreme scaled values at the 99th percentile per feature. Persisting both the scaler and clip values is important because the autoencoder and ensemble notebooks must consume the same transformed feature distribution during inference.
+\subsection{Training Workflow}
 
-\subsection{Model Design}
+The training workflow is implemented as five Jupyter notebooks:
 
-XGBoost is used as the primary structured-data classifier and is trained with class-balanced sample weights to reduce bias toward dominant classes. BERT receives text generated from the same flow features and classifies attack types from a semantic representation. The autoencoder is trained only on benign samples, which lets it learn a compact normal-behavior manifold and treat high reconstruction error as anomaly evidence.
+\begin{enumerate}[leftmargin=1.2cm]
+    \item \texttt{01\_preprocessing.ipynb}: loads and combines flow files, cleans data, selects the 18 features, scales the features, creates train/validation/test splits, and saves preprocessing artifacts.
+    \item \texttt{02\_xgboost.ipynb}: trains the supervised XGBoost classifier and saves the model and metrics.
+    \item \texttt{03\_bert.ipynb}: generates text from flow features, fine-tunes the BERT classifier, and saves the transformer model directory and metrics.
+    \item \texttt{04\_autoencoder.ipynb}: trains a denoising autoencoder on benign traffic, tunes the reconstruction threshold, and saves the model and threshold.
+    \item \texttt{05\_ensemble.ipynb}: loads all trained models, performs fusion experiments, runs ablation studies, and exports ensemble metrics and plots.
+\end{enumerate}
 
-\subsection{Fusion and Explanation}
+This notebook separation improves reproducibility because each model can be retrained and evaluated independently before being integrated into the backend.
 
-The ensemble layer combines model confidences using weighted fusion and then applies a threshold to suppress low-confidence alarms. The backend then enriches detected threats with external context and generates human-readable explanations. In environments where API credentials are unavailable, the LLM explainer falls back to mock mode so the demo remains runnable.
+\subsection{Mapping to Advanced AI Techniques}
 
+\begin{table}[H]
+\centering
+\caption{Assignment Technique Mapping}
+\label{tab:technique_mapping}
+\begin{tabularx}{\linewidth}{l X}
+\toprule
+Assignment technique & Project implementation \\
+\midrule
+Natural Language Processing & The preprocessing layer converts numeric flow records into natural-language descriptions such as packet count, traffic rate, payload size, and flow-balance behavior. \\
+Transformer-based models & The BERT layer uses \texttt{prajjwal1/bert-tiny} fine-tuned for 15 traffic classes. \\
+Generative AI & The denoising autoencoder reconstructs benign flows and flags high reconstruction error as anomalous behavior. \\
+Transfer learning & The BERT model starts from pretrained transformer weights and is adapted to the intrusion-detection class set. \\
+Prompt engineering & The LLM layer uses a strict JSON prompt with cybersecurity-specific rules to generate explanation, risk, mitigation, severity, and model-agreement fields. \\
+Ensemble learning & The fusion layer combines supervised and unsupervised model outputs into a single threat list with severity and confidence fields. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Runtime Detection Logic}
+
+At runtime, the FastAPI backend executes an eight-layer pipeline:
+
+\begin{enumerate}[leftmargin=1.2cm]
+    \item \textbf{Ingestion}: parse CSV, strip column whitespace, validate all required columns, and extract IPs where available.
+    \item \textbf{Preprocessing}: align feature order, replace infinite values, fill missing values, apply the saved scaler, and generate NLP text.
+    \item \textbf{XGBoost}: classify each scaled flow using the trained tabular model.
+    \item \textbf{BERT}: classify each generated text description using the trained transformer classifier.
+    \item \textbf{Autoencoder}: reconstruct each scaled feature vector and compute reconstruction error and anomaly score.
+    \item \textbf{Fusion}: combine XGBoost, BERT, and autoencoder outputs. The current backend uses weights 0.40, 0.40, and 0.20 for XGBoost, BERT, and the autoencoder respectively. A row is treated as a threat if any detector flags attack/anomaly; when XGBoost and BERT disagree on the attack type, the higher-confidence supervised model determines the label.
+    \item \textbf{Threat-intelligence enrichment}: add static IP reputation and CVE mapping from local lookup tables. This is a coursework demonstration layer, not a live external feed.
+    \item \textbf{LLM explanation}: generate or mock structured analyst explanations for the top threats.
+\end{enumerate}
+
+The current implementation is therefore a multi-model fusion system. Based on the saved metrics, a recommended future production refinement is to make XGBoost the sole final classifier, use the autoencoder only as a severity/risk overlay, and reserve language models for explanation only. This refinement is discussed in Section~\ref{sec:discussion}; it is not overstated as the current runtime design.
+
+% ------------------------------------------------------------
 \section{Implementation Details}
 
-\subsection{Software Architecture}
+\subsection{System Architecture}
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[node distance=1.7cm, every node/.style={draw, rounded corners, align=center, minimum height=1cm}]
-    \node (raw) {Raw CSV\\network flows};
-    \node (prep) [right of=raw, xshift=2.9cm] {Preprocessing\\scaling + clipping};
-    \node (xgb) [above right of=prep, xshift=1.6cm, yshift=0.2cm] {XGBoost\\tabular model};
-    \node (bert) [below right of=prep, xshift=1.6cm, yshift=-0.2cm] {BERT\\text classifier};
-    \node (ae) [below of=bert, yshift=-0.3cm] {Autoencoder\\anomaly detector};
-    \node (fusion) [right of=bert, xshift=3.0cm] {Weighted fusion\\ensemble};
-    \node (llm) [right of=fusion, xshift=2.8cm] {LLM explainer\\JSON summary};
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+    node distance=0.95cm and 1.25cm,
+    box/.style={draw, rounded corners, align=center, minimum width=2.5cm, minimum height=0.8cm, font=\small},
+    arrow/.style={-Latex, thick}
+]
+    \node[box] (csv) {CSV upload};
+    \node[box, right=of csv] (ingest) {Ingestion};
+    \node[box, right=of ingest] (prep) {Preprocessing\\+ NLP text};
+    \node[box, above right=of prep] (xgb) {XGBoost};
+    \node[box, right=of prep] (bert) {BERT};
+    \node[box, below right=of prep] (ae) {Autoencoder};
+    \node[box, right=2.0cm of bert] (fusion) {Fusion};
+    \node[box, right=of fusion] (mcp) {Threat intel};
+    \node[box, right=of mcp] (llm) {LLM report};
 
-    \draw[->] (raw) -- (prep);
-    \draw[->] (prep) -- (xgb);
-    \draw[->] (prep) -- (bert);
-    \draw[->] (prep) |- (ae);
-    \draw[->] (xgb) -- (fusion);
-    \draw[->] (bert) -- (fusion);
-    \draw[->] (ae) -- (fusion);
-    \draw[->] (fusion) -- (llm);
+    \draw[arrow] (csv) -- (ingest);
+    \draw[arrow] (ingest) -- (prep);
+    \draw[arrow] (prep) -- (xgb);
+    \draw[arrow] (prep) -- (bert);
+    \draw[arrow] (prep) -- (ae);
+    \draw[arrow] (xgb) -- (fusion);
+    \draw[arrow] (bert) -- (fusion);
+    \draw[arrow] (ae) -- (fusion);
+    \draw[arrow] (fusion) -- (mcp);
+    \draw[arrow] (mcp) -- (llm);
 \end{tikzpicture}
-\caption{Cyber AI Agent software architecture.}
-\label{fig:software_arch}
+}
+\caption{Runtime architecture of the Cyber AI Agent backend.}
+\label{fig:architecture}
 \end{figure}
 
-\subsection{Backend Layer Structure}
+\subsection{Backend Implementation}
 
-The FastAPI application loads all model layers at startup and routes each request through the following sequence: ingestion, preprocessing, XGBoost, BERT, autoencoder, fusion, MCP enrichment, and LLM explanation. This keeps training and inference decoupled while preserving the same transformation logic across notebooks and runtime services.
+The backend is implemented in Python using FastAPI. The main application is defined in \texttt{backend/app/main.py}; the pipeline orchestration is in \texttt{backend/app/pipeline.py}. Each AI step is isolated in \texttt{backend/app/layers/}, which makes the system easier to test and debug.
 
 \begin{table}[H]
 \centering
-\caption{Backend Layer Responsibilities}
-\label{tab:backend_layers}
-\begin{tabular}{c l p{7.8cm}}
+\caption{Backend Components and Responsibilities}
+\label{tab:backend_components}
+\small
+\begin{tabularx}{\linewidth}{l X}
 \toprule
-Layer & Component & Responsibility \\
+File / module & Responsibility \\
 \midrule
-1 & Ingestion & Parse CSV input, validate columns, and extract IP metadata. \\
-2 & Preprocessing & Align feature order, clean values, scale and clip data, generate text. \\
-3 & XGBoost & Predict attack labels from tabular features. \\
-4 & BERT & Predict attack labels from generated textual descriptions. \\
-5 & Autoencoder & Flag anomalies from reconstruction error. \\
-6 & Fusion & Combine model outputs using weighted decision logic. \\
-7 & MCP tools & Enrich detections with extra threat context. \\
-8 & LLM explainer & Produce concise human-readable incident summaries. \\
+\texttt{main.py} & Creates the FastAPI application, enables CORS, loads environment variables, and registers API routers. \\
+\texttt{pipeline.py} & Loads singleton layer objects, executes all eight layers, serializes debug outputs, and returns final results. \\
+\texttt{ingestion.py} & Parses uploaded CSV content and validates the 18 required features. \\
+\texttt{preprocessing.py} & Reindexes features, cleans invalid values, applies the saved scaler, and generates text descriptions. \\
+\texttt{xgboost\_model.py} & Loads \texttt{xgboost\_model.pkl} and returns labels, attack names, and probabilities. \\
+\texttt{bert\_model.py} & Loads the local BERT classifier and tokenizes generated texts for inference. \\
+\texttt{autoencoder\_model.py} & Loads \texttt{autoencoder.keras} and \texttt{autoencoder\_threshold.json}; returns reconstruction error and anomaly flags. \\
+\texttt{fusion.py} & Combines model outputs, resolves labels, calculates fused risk score, and creates the threat list. \\
+\texttt{mcp\_tools.py} & Adds local IP reputation and CVE mapping to detected threats. \\
+\texttt{llm\_explainer.py} & Produces structured JSON explanations using Groq or a deterministic mock fallback. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{API and Frontend Product}
+
+The product includes a React + Vite frontend. The demo workflow begins on the upload page, where the user selects a CSV file. The frontend sends the file to \texttt{/api/upload-logs}, then triggers \texttt{/api/predict?debug=true}. After prediction, the dashboard displays summary statistics, threat severity distribution, attack type distribution, per-model breakdown, LLM reports, and layer-by-layer debug telemetry.
+
+\begin{table}[H]
+\centering
+\caption{Main API Endpoints}
+\label{tab:api}
+\begin{tabularx}{\linewidth}{l l X}
+\toprule
+Method & Endpoint & Purpose \\
+\midrule
+GET & \texttt{/} & Health check and documentation pointer. \\
+POST & \texttt{/api/upload-logs} & Upload a CSV log file. \\
+POST & \texttt{/api/predict} & Run the full pipeline on an uploaded file. \\
+GET & \texttt{/api/dashboard} & Return latest summary, threat counts, and model breakdown. \\
+GET & \texttt{/api/reports} & Return enriched LLM threat reports. \\
+GET & \texttt{/api/debug/runs} & List saved debug run IDs. \\
+GET & \texttt{/api/debug/run/\{run\_id\}} & Load a specific debug trace. \\
+GET & \texttt{/api/debug/latest} & Load the latest debug trace. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Reproducibility}
+
+The repository includes \texttt{backend/requirements.txt} for Python dependencies, \texttt{frontend/package.json} for the React frontend, setup instructions in the README and \texttt{SETUP.md}, and a \texttt{backend/.env.example} file for optional LLM configuration. Runtime model artifacts are loaded from \texttt{backend/trained\_models/}. The backend also writes JSON debug traces to \texttt{backend/debug\_logs/}, allowing intermediate outputs to be inspected after each run.
+
+% ------------------------------------------------------------
+\section{Experimental Setup and Results}
+
+\subsection{Experimental Setup}
+
+The dataset was split into training, validation, and test sets during preprocessing. XGBoost and BERT were evaluated as multiclass classifiers. The autoencoder was trained on benign traffic and evaluated as an anomaly detector using reconstruction error. The ensemble notebook then loaded all saved artifacts and compared individual and fused model behavior over the test split.
+
+Metrics used:
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item \textbf{Accuracy}: proportion of all correctly classified records.
+    \item \textbf{Precision}: proportion of predicted attacks that are correct.
+    \item \textbf{Recall}: proportion of actual attacks detected.
+    \item \textbf{F1-score}: harmonic mean of precision and recall.
+    \item \textbf{False positive rate}: benign records incorrectly flagged by the anomaly detector.
+    \item \textbf{ROC-AUC}: separability measure for XGBoost probability outputs.
+\end{itemize}
+
+\subsection{Individual Model Results}
+
+Table~\ref{tab:individual_results} reports the saved metrics from the individual model artifact files. These are the strongest direct indicators of each model's standalone performance.
+
+\begin{table}[H]
+\centering
+\caption{Saved Individual Model Metrics}
+\label{tab:individual_results}
+\small
+\begin{tabular}{l c c c c c}
+\toprule
+Model & Test samples & Accuracy & Precision & Recall & F1-score \\
+\midrule
+XGBoost & 241,522 & 0.9974 & 0.9973 & 0.9974 & 0.9969 \\
+BERT & 91,484 & 0.9513 & 0.9424 & 0.9513 & 0.9465 \\
+Autoencoder & 241,522 & 0.8853 & 0.7074 & 0.5726 & 0.6329 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Notebook Outputs}
+XGBoost produced the best standalone supervised result. This is expected because the dataset consists mainly of structured flow features, which are well suited to gradient-boosted decision trees. BERT also performed strongly, showing that the generated text representation preserved useful traffic behavior. The autoencoder had lower F1-score, but it serves a different purpose: identifying unusual behavior through reconstruction error rather than assigning an exact attack class.
+
+\subsection{Autoencoder Threshold}
+
+The saved autoencoder threshold is 0.0051889612, selected as the 95th percentile threshold. The validation F1-score at this threshold is 0.6302, and the test false positive rate is 0.0494. This supports its role as a supplementary anomaly detector rather than the only decision engine.
+
+\subsection{Fusion and Ablation Results}
+
+The ensemble experiment in \texttt{05\_ensemble.ipynb} saved the results in Table~\ref{tab:ensemble_results}. This notebook performs a separate combined inference run, so its individual model comparison values can differ from the standalone notebook files due to evaluation sample size and pipeline context.
 
 \begin{table}[H]
 \centering
-\caption{Notebook Workflow and Outputs}
-\label{tab:notebooks}
-\begin{tabular}{l p{8.2cm}}
+\caption{Saved Ensemble Experiment Metrics}
+\label{tab:ensemble_results}
+\small
+\begin{tabular}{l c c}
 \toprule
-Notebook & Purpose \\
+Component & Accuracy & F1-score \\
 \midrule
-\texttt{01\_preprocessing.ipynb} & Clean data, scale features, clip outliers, save artifacts \\
-\texttt{02\_xgboost.ipynb} & Train the supervised tree model and save feature importance \\
-\texttt{03\_bert.ipynb} & Build textual descriptions and fine-tune the transformer classifier \\
-\texttt{04\_autoencoder.ipynb} & Train the benign-only denoising autoencoder and tune thresholds \\
-\texttt{05\_ensemble.ipynb} & Fuse predictions, compare ablations, and export final reports \\
+XGBoost in ensemble run & 0.9969 & 0.9964 \\
+BERT in ensemble run & 0.8018 & 0.7364 \\
+Autoencoder in ensemble run & -- & 0.6646 \\
+Fusion ensemble & 0.9750 & 0.9713 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\section{Experimental Setup \& Results}
+The fusion result improves substantially over the weaker BERT and autoencoder signals in the ensemble experiment, but it does not exceed XGBoost. This is an important finding: multi-model fusion improves transparency and provides complementary evidence, but the current saved metrics show that XGBoost should be treated as the most reliable classifier for a production design.
 
-The experiments are designed to compare each model individually and then as a combined ensemble. XGBoost and BERT are evaluated using multiclass accuracy, precision, recall, and F1-score. The autoencoder is evaluated as a binary anomaly detector using detection rate and false positive rate. The ensemble notebook additionally produces per-class F1 comparisons and ablation studies.
+\subsection{Training Cost}
 
 \begin{table}[H]
 \centering
-\caption{Recommended Results Table for Final Submission}
-\label{tab:results}
-\begin{tabular}{l c c p{5cm}}
+\caption{Saved Training Times}
+\label{tab:training_time}
+\begin{tabular}{l c c}
 \toprule
-Model & Accuracy & F1 Score & Notes \\
+Model & Training time (seconds) & Approximate time \\
 \midrule
-XGBoost & -- & -- & Tabular baseline \\
-BERT & -- & -- & Transformer-based classifier \\
-Autoencoder & -- & -- & Binary anomaly detector \\
-Fusion ensemble & -- & -- & Final system output \\
+XGBoost & 1788.15 & 29.8 minutes \\
+BERT & 12968.83 & 3.6 hours \\
+Autoencoder & 7427.44 & 2.1 hours \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The final notebook outputs should be inserted into this section after the models are executed. The project already saves the relevant metrics JSON files and plots, so the report can be updated directly from the notebook outputs once the final training run is complete.
+BERT and the autoencoder require significantly more training time than XGBoost. This supports the practical decision to use XGBoost as the most important runtime classifier and to use the other models for complementary analysis and explanation.
 
-\section{Evaluation \& Performance Metrics}
+% ------------------------------------------------------------
+\section{Evaluation and Performance Analysis}
 
-The evaluation should cover both quantitative and qualitative analysis. For the supervised classifiers, report weighted accuracy, precision, recall, and F1-score. For the autoencoder, report reconstruction error statistics, the selected anomaly threshold, detection rate, and false positive rate. For the ensemble, report overall F1-score improvements over individual models, per-class F1 changes, and ablation-study findings.
+\subsection{Quantitative Evaluation}
 
-\begin{table}[H]
-\centering
-\caption{Metrics to Report in the Final Version}
-\label{tab:metrics}
-\begin{tabular}{l l}
-\toprule
-Metric & Why it matters \\
-\midrule
-Accuracy & Overall correctness of predictions \\
-Precision & False alarm control \\
-Recall & Attack detection sensitivity \\
-F1-score & Balance between precision and recall \\
-Detection rate & How many anomalies are caught \\
-False positive rate & Operational cost of false alarms \\
-\bottomrule
-\end{tabular}
-\end{table}
+From the saved metrics, XGBoost achieved the best balance of accuracy, recall, and F1-score. Its ROC-AUC value of 0.9920 further indicates strong probability separation. BERT's standalone metrics are also strong, but its ensemble-run metrics were weaker, suggesting that text-generation consistency, evaluation sample differences, or artifact alignment must be controlled carefully in future experiments. The autoencoder had a moderate F1-score but a low false positive rate of approximately 4.94\%, which is useful for prioritizing suspicious behavior.
 
+\subsection{Qualitative Evaluation}
+
+The qualitative strength of the system is interpretability. The dashboard does not only show a final label; it exposes XGBoost output, BERT output, autoencoder anomaly score, fused risk, severity, static threat-intelligence context, and a natural-language explanation. The debug page also allows layer-by-layer inspection, which is useful for identifying mismatches between training artifacts and runtime behavior.
+
+\subsection{Comparison With Baselines}
+
+A single XGBoost model is the strongest performance baseline in this project. The final system adds value beyond this baseline by providing:
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item an independent transformer perspective from textual traffic descriptions;
+    \item unsupervised anomaly evidence from reconstruction error;
+    \item static IP/CVE enrichment for analyst context;
+    \item LLM or mock explanations for readable reports;
+    \item frontend visualization and debug traceability.
+\end{itemize}
+
+Therefore, the project should not be judged only as a marginal F1-score optimization. It is a full AI product that combines detection, explanation, and demonstration usability.
+
+% ------------------------------------------------------------
 \section{Discussion}
+\label{sec:discussion}
 
-The main strength of the project is its diversity of model families. The tabular classifier captures structured flow patterns, the transformer uses semantic text representations, and the autoencoder provides an unsupervised safety net for unusual traffic. The ensemble improves robustness by preventing any one model from dominating the final decision.
+\subsection{Strengths}
 
-The main limitation is environment sensitivity on Windows, especially for TensorFlow and transformer imports. Another practical limitation is that the LLM explanation layer depends on valid API credentials unless mock mode is used. Finally, report numbers should be regenerated after the final notebook run so the written analysis matches the saved metrics.
+The project is strong in four areas. First, it implements more than the minimum number of required Advanced AI techniques. Second, it is end-to-end: the system includes training notebooks, saved artifacts, an API, and a frontend. Third, the pipeline is modular, so each layer can be tested or replaced. Fourth, the dashboard and debug route make model behavior visible, which improves trust and supports demonstration.
 
-\section{Conclusion \& Future Work}
+\subsection{Limitations}
 
-Cyber AI Agent demonstrates a complete Advanced Artificial Intelligence project that combines NLP, transformer-based learning, generative anomaly detection, prompt-driven explanation generation, and ensemble fusion. The system is practical for a live demo and is structured so that each notebook can be rerun independently.
+The current backend fusion logic allows any of the three detectors to mark a record as a threat. This improves sensitivity but can also increase inconsistency when one model is overconfident or misaligned. The saved ensemble metrics also show that fusion does not outperform XGBoost. Therefore, the current system is best described as an explainable multi-model research prototype rather than a fully calibrated production SOC detector.
 
-Future work should include packaging the notebooks into a single reproducible pipeline, adding automated smoke tests for artifact loading, integrating a front-end dashboard for analysts, and calibrating the fusion layer on a held-out validation set. A larger curated dataset and additional class balancing strategies could further improve rare-attack detection.
+The static threat-intelligence layer is intentionally limited. It uses a small local blacklist and CVE map, not a live reputation service. This is appropriate for coursework demonstration but should not be described as real-time threat intelligence.
 
+The LLM layer depends on a Groq API key for live explanations. When no key is configured, the system uses mock explanations. This keeps the product demonstrable, but live LLM behavior should be evaluated separately for reliability and factual safety.
+
+\subsection{Recommended Production Refinement}
+
+The saved results support a future XGBoost-centric production design. In that design, XGBoost would be the only final attack classifier, the autoencoder would only raise or lower risk based on anomaly score, and the language model would be used only after the decision for explanation. This avoids conflicting votes and prevents BERT or anomaly-only outputs from overriding the strongest classifier.
+
+A production decision rule could be:
+
+\begin{lstlisting}[language=Python, caption={Recommended future production decision rule}]
+pred = xgb_model.predict(X)
+is_anomaly = autoencoder_score(X) > threshold
+
+if pred != "BENIGN":
+    label = pred
+    severity = "HIGH" if is_anomaly else "MEDIUM"
+else:
+    label = "BENIGN"
+    severity = "LOW" if is_anomaly else "VERY_LOW"
+\end{lstlisting}
+
+This refinement should be described as future work unless the backend code is changed to match it.
+
+% ------------------------------------------------------------
+\section{Conclusion and Future Work}
+
+Cyber AI Agent successfully demonstrates a complete Advanced Artificial Intelligence project in the cybersecurity domain. It combines NLP, transformer transfer learning, unsupervised autoencoder anomaly detection, ensemble fusion, prompt-engineered explanation, a FastAPI backend, and a React dashboard. The project therefore addresses all major assignment requirements: real-world relevance, multiple AI techniques, model implementation, evaluation, report quality, and working demo functionality.
+
+The evaluation shows that XGBoost is the strongest classifier for the structured flow dataset, while BERT and the autoencoder add complementary interpretability and anomaly evidence. The final product is suitable for a coursework demonstration and provides a clear foundation for future hardening.
+
+Future work should focus on:
+
+\begin{enumerate}[leftmargin=1.2cm]
+    \item implementing the XGBoost-centric production decision rule;
+    \item calibrating severity thresholds on a validation set;
+    \item replacing static IP/CVE lookup tables with live threat-intelligence APIs;
+    \item adding model and data versioning for reproducibility;
+    \item expanding frontend reporting to export PDF/CSV incident summaries;
+    \item adding continuous integration so backend tests and frontend builds run automatically.
+\end{enumerate}
+
+% ------------------------------------------------------------
 \section{References}
 
 \begin{thebibliography}{9}
-\bibitem{vaswani2017attention}
-Vaswani, A., Shazeer, N., Parmar, N., et al. (2017). Attention is all you need. \textit{Advances in Neural Information Processing Systems}.
 
-\bibitem{devlin2019bert}
-Devlin, J., Chang, M.-W., Lee, K., \& Toutanova, K. (2019). BERT: Pre-training of deep bidirectional transformers for language understanding. \textit{Proceedings of NAACL-HLT}.
+\bibitem{bert}
+Devlin, J., Chang, M.-W., Lee, K., \& Toutanova, K. (2019). BERT: Pre-training of deep bidirectional transformers for language understanding. \textit{Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies}, 4171--4186.
 
-\bibitem{sklearn}
-Pedregosa, F., Varoquaux, G., Gramfort, A., et al. (2011). Scikit-learn: Machine learning in Python. \textit{Journal of Machine Learning Research, 12}, 2825--2830.
+\bibitem{vaswani}
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, L., \& Polosukhin, I. (2017). Attention is all you need. \textit{Advances in Neural Information Processing Systems}, 30.
 
 \bibitem{xgboost}
-Chen, T., \& Guestrin, C. (2016). XGBoost: A scalable tree boosting system. \textit{Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining}.
+Chen, T., \& Guestrin, C. (2016). XGBoost: A scalable tree boosting system. In \textit{Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining} (pp. 785--794).
+
+\bibitem{sklearn}
+Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., Blondel, M., Prettenhofer, P., Weiss, R., Dubourg, V., Vanderplas, J., Passos, A., Cournapeau, D., Brucher, M., Perrot, M., \& Duchesnay, E. (2011). Scikit-learn: Machine learning in Python. \textit{Journal of Machine Learning Research, 12}, 2825--2830.
+
+\bibitem{cicids}
+Sharafaldin, I., Lashkari, A. H., \& Ghorbani, A. A. (2018). Toward generating a new intrusion detection dataset and intrusion traffic characterization. \textit{Proceedings of the 4th International Conference on Information Systems Security and Privacy}, 108--116.
+
+\bibitem{rumelhart}
+Rumelhart, D. E., Hinton, G. E., \& Williams, R. J. (1986). Learning representations by back-propagating errors. \textit{Nature, 323}(6088), 533--536.
+
+\bibitem{fastapi}
+Ramirez, S. (2024). \textit{FastAPI documentation}. https://fastapi.tiangolo.com/
+
 \end{thebibliography}
 
+% ------------------------------------------------------------
+\appendix
 \section{Appendices}
 
-\subsection{Project File Structure}
+\subsection{Core Project Structure}
 
-\begin{lstlisting}[caption={Core project structure}, label={lst:structure}]
+\begin{lstlisting}[caption={Core project structure}]
 cyber-ai-agent/
 |-- backend/
 |   |-- app/
 |   |   |-- main.py
 |   |   |-- pipeline.py
 |   |   |-- layers/
-|   |   |   |-- ingestion.py
-|   |   |   |-- preprocessing.py
-|   |   |   |-- xgboost_model.py
-|   |   |   |-- bert_model.py
-|   |   |   |-- autoencoder_model.py
-|   |   |   |-- fusion.py
-|   |   |   |-- mcp_tools.py
-|   |   |   +-- llm_explainer.py
 |   |   |-- routes/
+|   |   |-- models/
 |   |   +-- utils/
-|   |-- datasets/
+|   |-- notebooks/
+|   |-- tests/
 |   |-- trained_models/
-|   +-- notebooks/
-|       |-- 01_preprocessing.ipynb
-|       |-- 02_xgboost.ipynb
-|       |-- 03_bert.ipynb
-|       |-- 04_autoencoder.ipynb
-|       +-- 05_ensemble.ipynb
+|   |-- requirements.txt
+|   +-- init_models.py
 |-- frontend/
+|   |-- src/
+|   |-- package.json
+|   +-- vite.config.js
 |-- reports/
+|-- README.md
++-- SETUP.md
 \end{lstlisting}
 
-\subsection{Technologies Used}
+\subsection{Runtime Commands}
+
+\begin{lstlisting}[caption={Backend and frontend demo commands}]
+cd backend
+.\venv\Scripts\Activate.ps1
+uvicorn app.main:app --reload --port 8000
+
+cd frontend
+npm install
+npm run dev
+\end{lstlisting}
+
+\subsection{Team Contribution Breakdown}
 
 \begin{table}[H]
 \centering
-\caption{Technologies Used in the Project}
-\label{tab:tech}
-\begin{tabular}{l l}
+\caption{Team Contribution Template}
+\begin{tabularx}{\linewidth}{l X}
 \toprule
-Technology & Role \\
+Member & Contribution \\
 \midrule
-FastAPI & Backend API layer \\
-XGBoost & Structured tabular classification \\
-Transformers / BERT & NLP-based traffic classification \\
-TensorFlow / Keras & Autoencoder anomaly detection \\
-PyTorch & Transformer runtime support \\
-Groq API & LLM-based explanations \\
-Pandas / NumPy & Data preprocessing and analysis \\
-Joblib & Artifact persistence \\
+Student Name 1 & Data preprocessing, XGBoost training, metric analysis. \\
+Student Name 2 & BERT training, autoencoder training, notebook documentation. \\
+Student Name 3 & FastAPI backend, React dashboard, report and presentation preparation. \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
+
+\subsection{Submission Checklist}
+
+\begin{itemize}[leftmargin=1.2cm]
+    \item Final report uses required sections, 12 pt font, 1.5 spacing, 1 inch margins, page numbers, and references.
+    \item README and SETUP guide describe dependencies and reproducible execution.
+    \item Training notebooks contain markdown explanations and save artifacts.
+    \item Backend can run on port 8000 and frontend on port 3000.
+    \item Video presentation should cover problem, approach, results, and live dashboard demo within five minutes.
+\end{itemize}
 
 \end{document}

@@ -1,6 +1,8 @@
-\contentsline {table}{\numberline {1}{\ignorespaces Mapping of Assignment Techniques to the Project}}{5}{table.caption.1}%
-\contentsline {table}{\numberline {2}{\ignorespaces Backend Layer Responsibilities}}{7}{table.caption.3}%
-\contentsline {table}{\numberline {3}{\ignorespaces Notebook Workflow and Outputs}}{7}{table.caption.4}%
-\contentsline {table}{\numberline {4}{\ignorespaces Recommended Results Table for Final Submission}}{8}{table.caption.5}%
-\contentsline {table}{\numberline {5}{\ignorespaces Metrics to Report in the Final Version}}{8}{table.caption.6}%
-\contentsline {table}{\numberline {6}{\ignorespaces Technologies Used in the Project}}{10}{table.caption.7}%
+\contentsline {table}{\numberline {1}{\ignorespaces Required Runtime Features}}{3}{table.caption.1}%
+\contentsline {table}{\numberline {2}{\ignorespaces Assignment Technique Mapping}}{4}{table.caption.2}%
+\contentsline {table}{\numberline {3}{\ignorespaces Backend Components and Responsibilities}}{6}{table.caption.4}%
+\contentsline {table}{\numberline {4}{\ignorespaces Main API Endpoints}}{7}{table.caption.5}%
+\contentsline {table}{\numberline {5}{\ignorespaces Saved Individual Model Metrics}}{8}{table.caption.6}%
+\contentsline {table}{\numberline {6}{\ignorespaces Saved Ensemble Experiment Metrics}}{9}{table.caption.7}%
+\contentsline {table}{\numberline {7}{\ignorespaces Saved Training Times}}{9}{table.caption.8}%
+\contentsline {table}{\numberline {8}{\ignorespaces Team Contribution Template}}{14}{table.caption.9}%

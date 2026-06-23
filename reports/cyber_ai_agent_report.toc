@@ -1,21 +1,34 @@
-\contentsline {section}{\numberline {1}Executive Summary}{4}{section.1}%
-\contentsline {section}{\numberline {2}Problem Statement \& Motivation}{4}{section.2}%
-\contentsline {section}{\numberline {3}Literature Review}{4}{section.3}%
-\contentsline {section}{\numberline {4}Methodology}{5}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Overall Pipeline}{5}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Technique Mapping}{5}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Preprocessing Strategy}{5}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Model Design}{6}{subsection.4.4}%
-\contentsline {subsection}{\numberline {4.5}Fusion and Explanation}{6}{subsection.4.5}%
+\contentsline {section}{\numberline {1}Executive Summary}{1}{section.1}%
+\contentsline {section}{\numberline {2}Problem Statement and Motivation}{1}{section.2}%
+\contentsline {section}{\numberline {3}Literature Review}{2}{section.3}%
+\contentsline {section}{\numberline {4}Methodology}{3}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Dataset and Feature Space}{3}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Training Workflow}{4}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Mapping to Advanced AI Techniques}{4}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Runtime Detection Logic}{5}{subsection.4.4}%
 \contentsline {section}{\numberline {5}Implementation Details}{6}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Software Architecture}{6}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Backend Layer Structure}{6}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Notebook Outputs}{7}{subsection.5.3}%
-\contentsline {section}{\numberline {6}Experimental Setup \& Results}{7}{section.6}%
-\contentsline {section}{\numberline {7}Evaluation \& Performance Metrics}{8}{section.7}%
-\contentsline {section}{\numberline {8}Discussion}{8}{section.8}%
-\contentsline {section}{\numberline {9}Conclusion \& Future Work}{9}{section.9}%
-\contentsline {section}{\numberline {10}References}{9}{section.10}%
-\contentsline {section}{\numberline {11}Appendices}{9}{section.11}%
-\contentsline {subsection}{\numberline {11.1}Project File Structure}{9}{subsection.11.1}%
-\contentsline {subsection}{\numberline {11.2}Technologies Used}{10}{subsection.11.2}%
+\contentsline {subsection}{\numberline {5.1}System Architecture}{6}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Backend Implementation}{6}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}API and Frontend Product}{7}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Reproducibility}{7}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Experimental Setup and Results}{7}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Experimental Setup}{7}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Individual Model Results}{8}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Autoencoder Threshold}{8}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Fusion and Ablation Results}{9}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Training Cost}{9}{subsection.6.5}%
+\contentsline {section}{\numberline {7}Evaluation and Performance Analysis}{10}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Quantitative Evaluation}{10}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Qualitative Evaluation}{10}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Comparison With Baselines}{10}{subsection.7.3}%
+\contentsline {section}{\numberline {8}Discussion}{11}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Strengths}{11}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Limitations}{11}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Recommended Production Refinement}{11}{subsection.8.3}%
+\contentsline {section}{\numberline {9}Conclusion and Future Work}{12}{section.9}%
+\contentsline {section}{\numberline {10}References}{13}{section.10}%
+\contentsline {section}{\numberline {A}Appendices}{13}{appendix.A}%
+\contentsline {subsection}{\numberline {A.1}Core Project Structure}{13}{subsection.A.1}%
+\contentsline {subsection}{\numberline {A.2}Runtime Commands}{14}{subsection.A.2}%
+\contentsline {subsection}{\numberline {A.3}Team Contribution Breakdown}{14}{subsection.A.3}%
+\contentsline {subsection}{\numberline {A.4}Submission Checklist}{15}{subsection.A.4}%
