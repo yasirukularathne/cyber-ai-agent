@@ -3,22 +3,39 @@ import torch
 from transformers import BertTokenizer, BertForSequenceClassification
 from app.utils.logger import get_logger
 from app.layers.label_map import ATTACK_LABELS
+from pathlib import Path
 
 logger = get_logger('bert')
 
 class BERTLayer:
-    """
-    Layer 4: Context-aware classification using fine-tuned BERT.
-    Processes NLP text representations of network flows.
-    """
 
     def __init__(self):
-        model_path = 'trained_models/bert_classifier'
+
+        BASE_DIR = Path(__file__).resolve().parents[2]
+        model_root = BASE_DIR / "trained_models"
+
+        # -------------------------------------------------
+        # 🔥 FIND LATEST BERT MODEL FOLDER AUTOMATICALLY
+        # -------------------------------------------------
+        bert_folders = sorted(model_root.glob("bert_classifier*"))
+
+        if not bert_folders:
+            raise FileNotFoundError("No BERT model found in trained_models/")
+
+        model_path = bert_folders[-1]  # latest folder
+
+        logger.info(f"🧠 Loading LATEST BERT model: {model_path}")
+
+        # -------------------------------------------------
+        # LOAD MODEL
+        # -------------------------------------------------
         self.tokenizer = BertTokenizer.from_pretrained(model_path)
         self.model = BertForSequenceClassification.from_pretrained(model_path)
+
         self.model.eval()
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.model.to(self.device)
+
         logger.info(f'BERT model loaded on {self.device}')
 
     def run(self, preprocessing_output: dict, batch_size: int = 32) -> dict:
